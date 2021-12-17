@@ -1,8 +1,7 @@
- package DAL;
+package DAL;
 
 import Models.Author;
-import Models.Book;
-//import static java.awt.Event.INSERT;
+import Models.OrderItens;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,8 +16,7 @@ import java.util.Properties;
  *
  * @author Marcelo Gomes
  */
-public class DAOBook {      
-  
+public class DAOOrderItens {
     private Connection conection;
     
     public static void main(String[] args) throws SQLException {       
@@ -36,40 +34,38 @@ public class DAOBook {
     }            
 
     //incluir
-    public void incluir(Book book) throws SQLException {        
+    public void incluirItem(OrderItens orderitens) throws SQLException {        
 
-        String query = "INSERT INTO livraria.books (boId, name, numPags, quantidade) "
-                + "VALUES (?,?,?,?)";
-        PreparedStatement prep = conection.prepareStatement(
-                query,
+        String query = "INSERT INTO livraria.orderitens(oiID, fkorID, fkboID) "
+                + "VALUES (?, ?, ?)";
+        PreparedStatement prep = conection.prepareStatement(query,
                 Statement.RETURN_GENERATED_KEYS);
-        prep.setInt(1, book.getBoID());
-        prep.setString(2,book.getName());        
-        prep.setInt(3,book.getNumPags());
-        prep.setInt(4,book.getQuantidade());
+        
+        prep.setInt(1, orderitens.getOiID());      
+        prep.setInt(2, orderitens.getFkorID()); 
+        prep.setInt(3, orderitens.getFkboID()); 
+      
         prep.execute();
         
-        ResultSet idOrdemCompra=prep.getGeneratedKeys();
-        idOrdemCompra.next();
-        System.out.println("Valor gerado: "+idOrdemCompra.getInt(1));
+        /*ResultSet idItemCompra=prep.getGeneratedKeys();
+        idItemCompra.next();
+        System.out.println("Valor gerado: "+idItemCompra.getInt(1));*/
         
         conection.commit();
         conection.close();
     }
 
     //alterar - a model deve estar com o id preenchido
-    public void alterar(Book book) throws SQLException {
+    public void alterarItem(OrderItens orderitens) throws SQLException {
         
         try {
-            String query = "UPDATE livraria.books "
-                    + "SET name=?, numPags = ?, quantidade=?, WHERE id=?";
+            String query = "UPDATE livraria.orderItens "
+                    + "SET oiID=? WHERE id=?";
             //PreparedStatement prep = cdb.getconection.prepareStatement(query);
-            PreparedStatement prep = conection.prepareStatement(query);
-            prep.setInt(6, book.getBoID());            
-            prep.setString(2, book.getName());            
-            prep.setInt(4, book.getNumPags());
-            prep.setInt(5, book.getQuantidade());
+            PreparedStatement prep = conection.prepareStatement(query);            
             
+            prep.setInt(1, orderitens.getOiID()); 
+                       
             prep.execute();
 
             conection.commit();
@@ -80,14 +76,14 @@ public class DAOBook {
     }
 
     //excluir
-    public void excluir(Book book) {
+    public void excluirItem(OrderItens orderitens) {
         
         try {
-            String query = "DELETE FROM livraria.books "
+            String query = "DELETE FROM livraria.orderitens "
                     + "WHERE id=?";
             PreparedStatement prep = conection.prepareStatement(query);
 
-            prep.setInt(1, book.getBoID());
+            prep.setInt(1,orderitens.getOiID());
             prep.execute();
 
             conection.commit();
@@ -98,51 +94,53 @@ public class DAOBook {
     }
 
     //consultar
-    public int consultarLivro(Book book) {
+    public int consultarPorItem(OrderItens orderitens) {
         
         int idTmp = -1;
-        String query = "SELECT * from livraria.books "
-                + "WHERE titulo = ?";
+        String query = "SELECT * from livraria.orderitens "
+                + "WHERE name = ?";
         try {
             PreparedStatement prep = conection.prepareStatement(query);
-            prep.setString(1, book.getTitle());
+            prep.setInt(1, orderitens.getOiID());
 
             ResultSet list = prep.executeQuery();
 
             while (list.next()) {
-                idTmp = list.getInt("id");
-                String tmpTitulo = list.getString("titulo");
-                book.setBoID(idTmp);                             
-                               
+                 
+                idTmp = list.getInt("id");               
+                orderitens.setOiID(idTmp);
+                
+                /*Author author = new Author();
+                author.setName(list.getString("autor"));
+                book.setAutor(author);
+                Publisher publisher = new Publisher();
+                publisher.setName(list.getString("publisher"));
+                book.setPublisher(publisher);*/
                 break;
             }            
             conection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        book.setBoID(idTmp);
+        orderitens.setOiID(idTmp);
         return idTmp;
     }
 
-    public List listar(String params) {
+    public List listarItem(String params) {
         
-        List<Book> listaLivros = new ArrayList<>();
-        String query = "SELECT * from livraria.books " + params;
+        List<Author> listaLivros = new ArrayList<>();
+        String query = "SELECT * from livraria.orderitens " + params;
 
         try {
             PreparedStatement prep = conection.prepareStatement(query);
             ResultSet lista = prep.executeQuery();
 
             while (lista.next()) {
-                Book book = new Book();
-                book.setBoID(lista.getInt("id"));
-                book.setTitle(lista.getString("titulo"));  
-                book.setName(lista.getString("name"));
-                book.setNumPags(lista.getInt("numPags"));
-                book.setQuantidade(lista.getInt("quantidade"));                
                 
+                OrderItens orderitens = new OrderItens();
+                orderitens.setOiID(lista.getInt("oiID"));
                 
-                //listaLivros.add(book);
+               
                 /*book.setAuthor(lista.getString("autor"));
                 book.setEmail(lista.getString("email"));
                 listaLivros.add(book);*/
@@ -152,5 +150,6 @@ public class DAOBook {
             e.printStackTrace();
         }
         return listaLivros;
-    }    
+    }       
+
 }

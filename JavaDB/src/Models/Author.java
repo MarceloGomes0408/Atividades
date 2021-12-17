@@ -9,6 +9,15 @@ package Models;
 public class Author {
     private String name;
     private int auid;
+    private Author author;
+
+    public Author getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(Author author) {
+        this.author = author;
+    }
 
     public int getAuid() {
         return auid;

@@ -1,8 +1,9 @@
- package DAL;
 
+package DAL;
+
+import Models.User;
 import Models.Author;
 import Models.Book;
-//import static java.awt.Event.INSERT;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,8 +18,7 @@ import java.util.Properties;
  *
  * @author Marcelo Gomes
  */
-public class DAOBook {      
-  
+public class DAOUser {
     private Connection conection;
     
     public static void main(String[] args) throws SQLException {       
@@ -36,39 +36,35 @@ public class DAOBook {
     }            
 
     //incluir
-    public void incluir(Book book) throws SQLException {        
+    public void incluir(User user) throws SQLException {        
 
-        String query = "INSERT INTO livraria.books (boId, name, numPags, quantidade) "
-                + "VALUES (?,?,?,?)";
+        String query = "INSERT INTO livraria.user (name) "
+                + "VALUES (?)";
         PreparedStatement prep = conection.prepareStatement(
                 query,
                 Statement.RETURN_GENERATED_KEYS);
-        prep.setInt(1, book.getBoID());
-        prep.setString(2,book.getName());        
-        prep.setInt(3,book.getNumPags());
-        prep.setInt(4,book.getQuantidade());
+        prep.setString(1, user.getName());
+     
         prep.execute();
         
-        ResultSet idOrdemCompra=prep.getGeneratedKeys();
+        /*ResultSet idOrdemCompra=prep.getGeneratedKeys();
         idOrdemCompra.next();
-        System.out.println("Valor gerado: "+idOrdemCompra.getInt(1));
+        System.out.println("Valor gerado: "+idOrdemCompra.getInt(1));*/
         
         conection.commit();
         conection.close();
     }
 
     //alterar - a model deve estar com o id preenchido
-    public void alterar(Book book) throws SQLException {
+    public void alterar(User user) throws SQLException {
         
         try {
-            String query = "UPDATE livraria.books "
-                    + "SET name=?, numPags = ?, quantidade=?, WHERE id=?";
+            String query = "UPDATE livraria.user "
+                    + "SET name=? WHERE id=?";
             //PreparedStatement prep = cdb.getconection.prepareStatement(query);
             PreparedStatement prep = conection.prepareStatement(query);
-            prep.setInt(6, book.getBoID());            
-            prep.setString(2, book.getName());            
-            prep.setInt(4, book.getNumPags());
-            prep.setInt(5, book.getQuantidade());
+            
+            prep.setString(1, user.getName());                 
             
             prep.execute();
 
@@ -80,14 +76,14 @@ public class DAOBook {
     }
 
     //excluir
-    public void excluir(Book book) {
+    public void excluir(User user) {
         
         try {
-            String query = "DELETE FROM livraria.books "
+            String query = "DELETE FROM livraria.user "
                     + "WHERE id=?";
             PreparedStatement prep = conection.prepareStatement(query);
 
-            prep.setInt(1, book.getBoID());
+            prep.setInt(1, user.getUsId());
             prep.execute();
 
             conection.commit();
@@ -98,59 +94,54 @@ public class DAOBook {
     }
 
     //consultar
-    public int consultarLivro(Book book) {
+    public int consultarPorUsuario(User user) {
         
         int idTmp = -1;
-        String query = "SELECT * from livraria.books "
-                + "WHERE titulo = ?";
+        String query = "SELECT * from livraria.user "
+                + "WHERE usuario = ?";
         try {
             PreparedStatement prep = conection.prepareStatement(query);
-            prep.setString(1, book.getTitle());
+            prep.setString(1, user.getName());
 
             ResultSet list = prep.executeQuery();
 
             while (list.next()) {
                 idTmp = list.getInt("id");
-                String tmpTitulo = list.getString("titulo");
-                book.setBoID(idTmp);                             
-                               
+                String tmpUsuario = list.getString("name");
+                user.setUsId(idTmp);
+                user.setUser(user);
+                
+                
                 break;
             }            
             conection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        book.setBoID(idTmp);
+        user.setUsId(idTmp);
         return idTmp;
     }
 
     public List listar(String params) {
         
-        List<Book> listaLivros = new ArrayList<>();
-        String query = "SELECT * from livraria.books " + params;
-
+        List<User> listaUsuarios = new ArrayList<>();
+        //String query = "SELECT * from livraria.user " + params;
+        String query = "SELECT name from user " + params;
         try {
             PreparedStatement prep = conection.prepareStatement(query);
             ResultSet lista = prep.executeQuery();
 
             while (lista.next()) {
-                Book book = new Book();
-                book.setBoID(lista.getInt("id"));
-                book.setTitle(lista.getString("titulo"));  
-                book.setName(lista.getString("name"));
-                book.setNumPags(lista.getInt("numPags"));
-                book.setQuantidade(lista.getInt("quantidade"));                
+                User user  = new User();
+                user.setUsId(lista.getInt("id"));
+                user.setName(lista.getString("name"));
                 
                 
-                //listaLivros.add(book);
-                /*book.setAuthor(lista.getString("autor"));
-                book.setEmail(lista.getString("email"));
-                listaLivros.add(book);*/
             }            
             conection.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        return listaLivros;
-    }    
+        }             
+        return listaUsuarios;
+    }       
 }

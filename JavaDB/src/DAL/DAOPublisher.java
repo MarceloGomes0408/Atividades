@@ -1,8 +1,11 @@
- package DAL;
+
+
+package DAL;
 
 import Models.Author;
 import Models.Book;
-//import static java.awt.Event.INSERT;
+import Models.Publisher;
+//import static com.sun.org.glassfish.external.amx.AMXUtil.prop;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,10 +20,10 @@ import java.util.Properties;
  *
  * @author Marcelo Gomes
  */
-public class DAOBook {      
-  
-    private Connection conection;
+public class DAOPublisher {   
     
+    private Connection conection;
+     
     public static void main(String[] args) throws SQLException {       
           
     //public void conectar() {
@@ -33,43 +36,43 @@ public class DAOBook {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }            
+    }               
 
-    //incluir
-    public void incluir(Book book) throws SQLException {        
+    //incluir -o objeto book nÃ£o tem id.
 
-        String query = "INSERT INTO livraria.books (boId, name, numPags, quantidade) "
-                + "VALUES (?,?,?,?)";
+    public void incluir(Publisher publisher) throws SQLException {             
+
+        String query = "INSERT INTO livraria.publisher (puId, name, endereco) "
+                + "VALUES (?,?,?)";
         PreparedStatement prep = conection.prepareStatement(
                 query,
                 Statement.RETURN_GENERATED_KEYS);
-        prep.setInt(1, book.getBoID());
-        prep.setString(2,book.getName());        
-        prep.setInt(3,book.getNumPags());
-        prep.setInt(4,book.getQuantidade());
+        prep.setInt(1, publisher.getPuID());
+        prep.setString(2, publisher.getName());
+        prep.setString(3, publisher.getEndereco());
         prep.execute();
         
-        ResultSet idOrdemCompra=prep.getGeneratedKeys();
-        idOrdemCompra.next();
-        System.out.println("Valor gerado: "+idOrdemCompra.getInt(1));
+        //pega a ultima id gerada
+        ResultSet idUltimaCompra=prep.getGeneratedKeys();
+        idUltimaCompra.next();
+        System.out.println("Valor gerado:"+idUltimaCompra.getInt(1));        
         
+        //query="SELECT LAST_INSERT_ID()";
         conection.commit();
         conection.close();
     }
 
     //alterar - a model deve estar com o id preenchido
-    public void alterar(Book book) throws SQLException {
+    public void alterar(Publisher publisher) throws SQLException {       
         
         try {
-            String query = "UPDATE livraria.books "
-                    + "SET name=?, numPags = ?, quantidade=?, WHERE id=?";
-            //PreparedStatement prep = cdb.getconection.prepareStatement(query);
+            String query = "UPDATE livaria.publisher "
+                    + "SET name=?, endereco=? WHERE id=?";
             PreparedStatement prep = conection.prepareStatement(query);
-            prep.setInt(6, book.getBoID());            
-            prep.setString(2, book.getName());            
-            prep.setInt(4, book.getNumPags());
-            prep.setInt(5, book.getQuantidade());
-            
+
+            //prep.setInt(4, publisher.getPuID());            
+            prep.setString(2, publisher.getName());            
+            prep.setString(3, publisher.getEndereco());
             prep.execute();
 
             conection.commit();
@@ -79,15 +82,15 @@ public class DAOBook {
         }
     }
 
-    //excluir
-    public void excluir(Book book) {
-        
+    //excluir --o objeto book precisa do id....
+    public void excluir(Publisher publisher) {
+        //conectar();
         try {
-            String query = "DELETE FROM livraria.books "
+            String query = "DELETE FROM livraria.publisher "
                     + "WHERE id=?";
             PreparedStatement prep = conection.prepareStatement(query);
 
-            prep.setInt(1, book.getBoID());
+            prep.setInt(1, publisher.getPuID());
             prep.execute();
 
             conection.commit();
@@ -98,55 +101,57 @@ public class DAOBook {
     }
 
     //consultar
-    public int consultarLivro(Book book) {
+    public int consultarPublicao(Publisher publisher) {
+        //conectar();
         
         int idTmp = -1;
-        String query = "SELECT * from livraria.books "
-                + "WHERE titulo = ?";
+        //String tmpPublica="";        
+        
+        String query = "SELECT * from livraria.publisher "
+                + "WHERE name = ?";
         try {
             PreparedStatement prep = conection.prepareStatement(query);
-            prep.setString(1, book.getTitle());
+            prep.setString(1, publisher.getName());
 
             ResultSet list = prep.executeQuery();
 
+            
             while (list.next()) {
                 idTmp = list.getInt("id");
-                String tmpTitulo = list.getString("titulo");
-                book.setBoID(idTmp);                             
-                               
+                String tmpName=list.getString("name");
+                publisher.setPuID(idTmp);
+                
                 break;
-            }            
+            }
             conection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        book.setBoID(idTmp);
+        //publisher.setPuID(idTmp);
+        //publisher.setTitle(tmpTitle);
+        //... 
+        //preencher o objeto inteiro.
+        
         return idTmp;
     }
 
     public List listar(String params) {
-        
-        List<Book> listaLivros = new ArrayList<>();
-        String query = "SELECT * from livraria.books " + params;
+        //conectar();
+        List<Publisher> listaLivros = new ArrayList<>();
+        String query = "SELECT * from livraria.publisher " + params;
 
         try {
             PreparedStatement prep = conection.prepareStatement(query);
             ResultSet lista = prep.executeQuery();
 
             while (lista.next()) {
-                Book book = new Book();
-                book.setBoID(lista.getInt("id"));
-                book.setTitle(lista.getString("titulo"));  
-                book.setName(lista.getString("name"));
-                book.setNumPags(lista.getInt("numPags"));
-                book.setQuantidade(lista.getInt("quantidade"));                
+                Publisher publisher = new Publisher();
+                publisher.setPuID(lista.getInt("id"));
+                publisher.setName(lista.getString("name"));
+                publisher.setEndereco(lista.getString("endereco"));               
                 
-                
-                //listaLivros.add(book);
-                /*book.setAuthor(lista.getString("autor"));
-                book.setEmail(lista.getString("email"));
-                listaLivros.add(book);*/
-            }            
+                //listaLivros.add(publisher);
+            }
             conection.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -154,3 +159,4 @@ public class DAOBook {
         return listaLivros;
     }    
 }
+

@@ -13,7 +13,6 @@ public class Teste {
         Book b1=new Book();
         b1.setTitulo("A volta ao mundo");
         b1.setAutor("julio Verne");
-        b1.setEmail("editora@verne.br");
         try{
         DAOBook db=new DAOBook();
         db.incluir(b1);

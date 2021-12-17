@@ -16,15 +16,17 @@ import java.util.Properties;
  * @author Marcelo Gomes
  */
 public class ConectionDB {
-    private Connection conection = null;
+    
+    private Connection conection;
+    
+    public static void main(String[] args) throws SQLException {
 
-    public void conectar() {
+    //public void conectar() {
         Properties prop = new Properties();
         prop.setProperty("user", "root");
-        prop.setProperty("password", "123");
+        prop.setProperty("password", "17012001");
         try {
-            conection = DriverManager.getConnection(
-                    "jdbc:mariadb://127.0.0.1:3306", prop);
+            Connection conection = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306", prop);
             conection.setAutoCommit(false);
         } catch (Exception e) {
             e.printStackTrace();

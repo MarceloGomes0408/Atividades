@@ -1,8 +1,9 @@
 
 package BLL;
 
-import DAL.DAOOrder;
-import Models.Order;
+import DAL.DAOPedido;
+import Models.Pedido;
+import Models.Cliente;
 /**
  *
  * @author Marcelo Gomes
@@ -10,13 +11,13 @@ import Models.Order;
 
 public class Sale {
    
-    public void vender(Order order) {
-        if(order.getCliente() != null && order.getOrderItens() != null) 
+    public void vender(Pedido pedido) {
+        if(pedido.getCliente() != null && pedido.getOrder() != null) 
         {
-            if(order.getItem().size() > 0)
+            if(pedido.getOrder().size() > 0)
             {
-                PedidoDAO pedidoDAO = new PedidoDAO();
-                pedidoDAO.inserir(pedidoDAO);
+                DAOPedido DAOpedido = new DAOPedido();
+                DAOpedido.inserir(DAOpedido);
             }
         }
     }

@@ -12,11 +12,11 @@ import java.util.Properties;
  */
 public class CreateTables {
 
-    public void create() throws SQLException {
+    public static void main(String[] args) throws SQLException {
         // Connection Configuration
         Properties connConfig = new Properties();
         connConfig.setProperty("user", "root");
-        connConfig.setProperty("password", "123");
+        connConfig.setProperty("password", "17012001");
         //connConfig.setProperty("useSsl", "true");
         //connConfig.setProperty("serverSslCert", "/path/to/ca-bundle.pem");
 
@@ -24,40 +24,14 @@ public class CreateTables {
         try (Connection conn = DriverManager.getConnection("jdbc:mariadb://127.0.0.1:3306", connConfig)) {
 
             // Disable Auto-Commit
-            conn.setAutoCommit(false);
-
-            // user
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute(
-                        "CREATE TABLE IF NOT EXISTS livaria.user ("
-                        + "usid INT PRIMARY KEY AUTO_INCREMENT,"
-                        + "name VARCHAR(25),"
-                        + "type VARCHAR(25))"
-                        + "ENGINE=InnoDB;");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            // publisher
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute(
-                        "CREATE TABLE IF NOT EXISTS livraria.publisher ("
-                        + "puid INT PRIMARY KEY AUTO_INCREMENT,"
-                        + "nome VARCHAR(25),"
-                        + "autor VARCHAR(25),"
-                        + "email VARCHAR(100),"
-                        + "endereço VARCHAR (100))"        
-                        + "ENGINE=InnoDB;");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            // autor
+            conn.setAutoCommit(false);         
+                       
+            // author
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute(
                         "CREATE TABLE IF NOT EXISTS livraria.author ("
                         + "auid INT PRIMARY KEY AUTO_INCREMENT,"
-                        + "nome VARCHAR(25))"
+                        + "name VARCHAR(25))"
                         + "ENGINE=InnoDB;");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -66,38 +40,23 @@ public class CreateTables {
             // book
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute(
-                        "CREATE TABLE IF NOT EXISTS livaria.books ("
+                        "CREATE TABLE IF NOT EXISTS livraria.book ("
                         + "boid INT PRIMARY KEY AUTO_INCREMENT,"
-                        + "title VARCHAR(25),"
-                        + "author VARCHAR(25),"
-                        + "email VARCHAR(100),"
+                        + "titulo VARCHAR(25),"
+                        + "name VARCHAR(25),"                        
+                        + "numPags INT(9),"
+                        + "quantidade INT(9),"
                         + "fkpuid INT NOT NULL,"
                         + "fkauid INT NOT NULL,"
                         + "CONSTRAINT FK_puid FOREIGN KEY (fkpuid)"
-                        + " REFERENCES LIVRARIA.publisher(puid),"
+                        + " REFERENCES livraria.publisher(puid),"
                         + "CONSTRAINT FK_auid FOREIGN KEY (fkauid)"
-                        + " REFERENCES LIVARIA.autor(auid))"
+                        + " REFERENCES livraria.author(auid))"
                         + "ENGINE=InnoDB;");
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            // order itens
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute(
-                        "CREATE TABLE IF NOT EXISTS livraria.orderitens ("
-                        + "auid INT PRIMARY KEY AUTO_INCREMENT,"
-                        + "fkorid INT NOT NULL," //id da venda
-                        + "fkboid INT NOT NULL," //id do livro
-                        + "CONSTRAINT FK_orid FOREIGN KEY (fkorid)"
-                        + " REFERENCES LIVRARIA.order(orid),"
-                        + "CONSTRAINT FK_boid FOREIGN KEY (fkboid)"
-                        + " REFERENCES LIVRARIA.book(boid)"
-                        + ")"
-                        + "ENGINE=InnoDB;");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            
             // order
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute(
@@ -107,14 +66,52 @@ public class CreateTables {
                         + "numberofbooks INT(6) NOT NULL,"
                         + "fkusid INT NOT NULL,"
                         + "CONSTRAINT FK_pusid FOREIGN KEY (fkusid)"
-                        + " REFERENCES LIVARIA.user(usid))"
+                        + " REFERENCES livraria.user(usid))"
                         + "ENGINE=InnoDB;");
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+            // order itens
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute(
+                        "CREATE TABLE IF NOT EXISTS livraria.orderitens ("
+                        + "oiID INT PRIMARY KEY AUTO_INCREMENT,"
+                        + "fkorid INT," //id da venda
+                        + "fkboid INT," //id do livro
+                        + "CONSTRAINT FK_orid FOREIGN KEY (fkorid)"
+                        + " REFERENCES livraria.order(orid),"
+                        + "CONSTRAINT FK_boid FOREIGN KEY (fkboid)"
+                        + " REFERENCES livraria.books(boid)"
+                        + ")"
+                        + "ENGINE=InnoDB;");
+            } catch (Exception e) {
+                e.printStackTrace();
+            } 
+            
+            // publisher
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute(
+                        "CREATE TABLE IF NOT EXISTS livraria.publisher ("
+                        + "puid INT PRIMARY KEY AUTO_INCREMENT,"
+                        + "name VARCHAR(25),"                                               
+                        + "endereco VARCHAR (100))"
+                        + "ENGINE=InnoDB;");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+            // user
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute(
+                        "CREATE TABLE IF NOT EXISTS livraria.user ("
+                        + "usid INT PRIMARY KEY AUTO_INCREMENT,"
+                        + "name VARCHAR(25),"
+                        + "type VARCHAR(25))"
+                        + "ENGINE=InnoDB;");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
-
-

@@ -9,6 +9,16 @@ package Models;
 public class User {
     private int usId;
     private String name;
+    private User user;
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+    
 
     public int getUsId() {
         return usId;

@@ -1,4 +1,3 @@
-
 package Models;
 
 /**
@@ -6,38 +5,41 @@ package Models;
  * @author Marcelo Gomes
  */
 public class Publisher {
+    private int puID;
     private String name;
-    private int puId;
-    private String endereço;
-
-    public int getPuid() {
-        return puId;
-    }
-
-    public void setPuid(int puid) {
-        this.puId = puid;
-    }
-
+    private String endereco;   
+    private Publisher publisher;
     
-
-    public String getEndereço() {
-        return endereço;
+    public int getPuID() {
+        return puID;
     }
 
-    public void setEndereço(String endereço) {
-        this.endereço = endereço;
+    public void setPuID(int puID) {
+        this.puID = puID;
     }
-    
-    
     
     public String getName() {
         return name;
     }
 
-   
     public void setName(String name) {
         this.name = name;
     }
+    
+    public String getEndereco() {
+        return endereco;
+    }
 
+    public void setEndereco(String endereco) {
+        this.endereco = endereco;
+    }    
+
+    public Publisher getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }   
     
 }
